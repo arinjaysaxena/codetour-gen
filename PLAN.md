@@ -16,8 +16,8 @@
 - [x] Language detection + import extraction for JS/TS, Python, Java
 
 ### 2026-11-24 - graph
-- [ ] Repo walker (ignore node_modules, build dirs, binaries) and file index
-- [ ] Import resolution to repo-relative files, import graph
+- [x] Repo walker (ignore node_modules, build dirs, binaries) and file index
+- [x] Import resolution to repo-relative files, import graph
 
 ### 2026-11-25 - analysis
 - [ ] Entry-point detection (main, server bootstrap, route handlers, CLI bins)
