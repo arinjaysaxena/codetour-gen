@@ -28,8 +28,8 @@
 - [x] Narration prompts per stop with neighbours context
 
 ### 2026-11-27 - output
-- [ ] Static HTML generator: step sidebar, code pane, line highlight, keyboard nav
-- [ ] CLI wiring end to end
+- [x] Static HTML generator: step sidebar, code pane, line highlight, keyboard nav
+- [x] CLI wiring end to end
 
 ### 2026-11-28 - quality
 - [ ] Fixture repos for the three languages, golden tests
