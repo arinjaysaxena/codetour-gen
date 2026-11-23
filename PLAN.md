@@ -24,8 +24,8 @@
 - [x] Centrality ranking and tour planner (10-20 ordered stops)
 
 ### 2026-11-26 - narration
-- [ ] Provider-neutral LLM client (OpenAI-compatible, Ollama default) + template fallback
-- [ ] Narration prompts per stop with neighbours context
+- [x] Provider-neutral LLM client (OpenAI-compatible, Ollama default) + template fallback
+- [x] Narration prompts per stop with neighbours context
 
 ### 2026-11-27 - output
 - [ ] Static HTML generator: step sidebar, code pane, line highlight, keyboard nav
