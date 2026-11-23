@@ -20,8 +20,8 @@
 - [x] Import resolution to repo-relative files, import graph
 
 ### 2026-11-25 - analysis
-- [ ] Entry-point detection (main, server bootstrap, route handlers, CLI bins)
-- [ ] Centrality ranking and tour planner (10-20 ordered stops)
+- [x] Entry-point detection (main, server bootstrap, route handlers, CLI bins)
+- [x] Centrality ranking and tour planner (10-20 ordered stops)
 
 ### 2026-11-26 - narration
 - [ ] Provider-neutral LLM client (OpenAI-compatible, Ollama default) + template fallback
