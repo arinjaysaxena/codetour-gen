@@ -62,3 +62,24 @@ test('renderTourHtml escapes the title', () => {
   const html = renderTourHtml({ title: '<x>', stops: [] }, []);
   assert.match(html, /&lt;x&gt;/);
 });
+
+test('--max-files limits the walk and warns', async () => {
+  const repo = fixture();
+  const out = join(mkdtempSync(join(tmpdir(), 'ct-out-')), 't');
+  const logs = [];
+  const { stops } = await generate({ repo, out, steps: 10, maxFiles: 2, llm: false }, { log: (m) => logs.push(m) });
+  assert.ok(stops.length <= 2);
+  assert.match(logs.join('\n'), /file limit \(2\) reached/);
+  assert.throws(() => parseArgs(['r', '--max-files', '0']), /--max-files/);
+});
+
+test('steps above 20 warn and an empty repo gives a clear error', async () => {
+  const repo = fixture();
+  const out = join(mkdtempSync(join(tmpdir(), 'ct-out-')), 't');
+  const logs = [];
+  const { stops } = await generate({ repo, out, steps: 50, llm: false }, { log: (m) => logs.push(m) });
+  assert.ok(stops.length <= 20);
+  assert.match(logs.join('\n'), /capped at 20/);
+  const empty = mkdtempSync(join(tmpdir(), 'ct-empty-'));
+  await assert.rejects(generate({ repo: empty, out, steps: 5, llm: false }), /no TS\/JS, Python or Java/);
+});

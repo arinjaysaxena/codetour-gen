@@ -33,7 +33,7 @@
 
 ### 2026-11-28 - quality
 - [x] Fixture repos for the three languages, golden tests
-- [ ] Error handling, large-repo limits
+- [x] Error handling, large-repo limits
 
 ### 2026-11-29 - ship
 - [ ] README (pitch, demo GIF steps, install, usage, how it works, roadmap)

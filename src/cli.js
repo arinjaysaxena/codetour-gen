@@ -10,10 +10,10 @@ import { renderTourHtml } from './html.js';
 import { createLlm } from './llm.js';
 import { loadConfig } from './config.js';
 
-export const USAGE = 'usage: codetour-gen <repo> [--out tour] [--steps 15] [--no-llm] [--model m] [--base-url url]';
+export const USAGE = 'usage: codetour-gen <repo> [--out tour] [--steps 15] [--max-files 5000] [--no-llm] [--model m] [--base-url url]';
 
 export function parseArgs(argv) {
-  const o = { repo: null, out: 'tour', steps: 15, llm: true, model: undefined, baseUrl: undefined };
+  const o = { repo: null, out: 'tour', steps: 15, maxFiles: 5000, llm: true, model: undefined, baseUrl: undefined };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const val = () => {
@@ -22,6 +22,7 @@ export function parseArgs(argv) {
     };
     if (a === '--out') o.out = val();
     else if (a === '--steps') o.steps = Number(val());
+    else if (a === '--max-files') o.maxFiles = Number(val());
     else if (a === '--no-llm') o.llm = false;
     else if (a === '--model') o.model = val();
     else if (a === '--base-url') o.baseUrl = val();
@@ -31,6 +32,7 @@ export function parseArgs(argv) {
   }
   if (!o.repo) throw new Error('missing <repo>');
   if (!Number.isInteger(o.steps) || o.steps < 1) throw new Error('--steps must be a positive integer');
+  if (!Number.isInteger(o.maxFiles) || o.maxFiles < 1) throw new Error('--max-files must be a positive integer');
   return o;
 }
 
@@ -38,9 +40,11 @@ export function parseArgs(argv) {
 export async function generate(opts, { llm, log = () => {} } = {}) {
   const root = resolve(opts.repo);
   if (!existsSync(root) || !statSync(root).isDirectory()) throw new Error(`not a directory: ${opts.repo}`);
-  const { files, truncated } = walkRepo(root);
+  if (opts.steps > 20) log('warning: --steps capped at 20');
+  const { files, truncated, skipped } = walkRepo(root, { maxFiles: opts.maxFiles ?? 5000 });
   if (!files.length) throw new Error('no TS/JS, Python or Java source files found');
-  if (truncated) log('warning: file limit reached, tour covers a subset of the repo');
+  if (truncated) log(`warning: file limit (${opts.maxFiles ?? 5000}) reached, tour covers a subset of the repo; raise --max-files`);
+  if (skipped) log(`warning: skipped ${skipped} unreadable path(s)`);
   let pkg = null;
   try {
     pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));

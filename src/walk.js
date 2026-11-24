@@ -20,8 +20,15 @@ export function walkRepo(root, limits = {}) {
   const { maxFiles, maxFileBytes } = { ...DEFAULT_LIMITS, ...limits };
   const files = [];
   let truncated = false;
+  let skipped = 0;
   const visit = (dir) => {
-    const entries = readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
+    } catch {
+      skipped++; // unreadable directory: keep going
+      return;
+    }
     for (const e of entries) {
       if (truncated) return;
       const full = join(dir, e.name);
@@ -29,8 +36,15 @@ export function walkRepo(root, limits = {}) {
         if (!IGNORED_DIRS.has(e.name) && !e.name.startsWith('.')) visit(full);
       } else if (e.isFile()) {
         const language = detectLanguage(e.name);
-        if (!language || statSync(full).size > maxFileBytes) continue;
-        const buf = readFileSync(full);
+        if (!language) continue;
+        let buf;
+        try {
+          if (statSync(full).size > maxFileBytes) continue;
+          buf = readFileSync(full);
+        } catch {
+          skipped++; // unreadable file or broken symlink
+          continue;
+        }
         if (looksBinary(buf) || !buf.toString('utf8').trim()) continue;
         if (files.length >= maxFiles) {
           truncated = true;
@@ -42,5 +56,5 @@ export function walkRepo(root, limits = {}) {
   };
   visit(root);
   files.sort((a, b) => a.path.localeCompare(b.path));
-  return { files, truncated };
+  return { files, truncated, skipped };
 }
