@@ -14,7 +14,7 @@ const looksBinary = (buf) => buf.subarray(0, 1024).includes(0);
 
 /**
  * Walk `root` and return [{ path (posix, repo-relative), language, source }], sorted by path.
- * Skips ignored dirs, oversized files and binary content. `truncated` is set when maxFiles is hit.
+ * Skips ignored dirs, oversized files, binary content and empty files. `truncated` is set when maxFiles is hit.
  */
 export function walkRepo(root, limits = {}) {
   const { maxFiles, maxFileBytes } = { ...DEFAULT_LIMITS, ...limits };
@@ -31,7 +31,7 @@ export function walkRepo(root, limits = {}) {
         const language = detectLanguage(e.name);
         if (!language || statSync(full).size > maxFileBytes) continue;
         const buf = readFileSync(full);
-        if (looksBinary(buf)) continue;
+        if (looksBinary(buf) || !buf.toString('utf8').trim()) continue;
         if (files.length >= maxFiles) {
           truncated = true;
           return;

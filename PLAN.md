@@ -32,7 +32,7 @@
 - [x] CLI wiring end to end
 
 ### 2026-11-28 - quality
-- [ ] Fixture repos for the three languages, golden tests
+- [x] Fixture repos for the three languages, golden tests
 - [ ] Error handling, large-repo limits
 
 ### 2026-11-29 - ship
